@@ -49,15 +49,9 @@ class Login(APIView):
         if not email or not password:
             return Response({"error": "Email and password are required."}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Check if the user is cached in Redis
-        cached_user = cache.get(email)
-        if cached_user:
-            return Response({"message": "User is cached. Skipping authentication.", "email": cached_user})
-
-        # Authenticate the user
         user = authenticate(request, username=email, password=password)
         if user is not None:
-            # Generate JWT token
+
             refresh = RefreshToken.for_user(user)
             return Response({
                 'refresh': str(refresh),
